@@ -1,0 +1,269 @@
+server:
+  port: 7003
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+jasypt:
+  encryptor:
+    password: alien
+
+spring:
+  admin:
+    client:
+      url: http://127.0.0.1:8081
+  application:
+    name: admin-server
+  profiles:
+    active: default
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
+    username: root
+    password: 123456
+    #driver-class-name: org.h2.Driver
+    #url: jdbc:h2:mem:h2test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    #platform: h2
+    #username: sa
+    #password:
+    maxPoolSize: 10
+    idleTimeout: 300000
+    minIdle: 10
+    poolName: master-database-connection-pool
+  main:
+    allow-bean-definition-overriding: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #filters: stat,wall,log4j,config
+      initialSize: 50
+      maxActive: 200
+      maxWait: 60000
+      minIdle: 20
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: false
+      poolPreparedStatements: true
+      max-open-prepared-statements: 50
+      #filters: stat;wall;log4j;config
+      maxPoolPreparedStatementPerConnectionSize: 20 
+      useGlobalDataSourceStat: true 
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500 
+      initializztion: always
+      stat-view-servlet:
+        reset-enable: false
+        login-username: admin
+        login-password: 123456
+  jpa:
+    database: mysql
+    #database: h2
+    generate-ddl: false 
+    open-in-view: true 
+    show-sql: true
+    hibernate:
+     ddl-auto: update
+     naming:
+      implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+      physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect #不加这句则默认为myisam引擎
+    #database-platform: org.hibernate.dialect.H2Dialect
+  data:
+    elasticsearch:
+      client:
+        reactive:
+          # 要连接的ES客户端 多个逗号分隔
+          endpoints: 127.0.0.1:9300
+      # 未使用到ES 关闭其持久化存储
+      repositories:
+        enabled: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+    # 定时任务
+  redis:
+   database: 0       
+   host: 127.0.0.1
+   port: 6379
+   password:
+    pool:
+    #连接池最大空闲连接
+     max-idle: 8 
+     #连接池最小空闲连接 
+     min-idle: 0 
+     #连接池最大连接数
+     max-active: 8 
+      #连接池最大等待时间
+     max-wait: 1 
+       #连接超时时间 
+   timeout: 10000
+   block-when-exhausted: true
+   ssl: false
+  # 默认名log4j2-spring.xml，就省下了在application.yml中配置
+#logging: 
+  #config: log4j2-spring.xml
+  #level: 
+   # cn.jay.repository: trace
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      fail-on-empty-beans: false
+      indent_output: true
+      write-dates-as-timestamps: true
+  http:
+    converters:
+      preferred-json-mapper: jackson
+  boot:
+    admin:
+      # 修改上下文路径
+      context-path: /adminUI
+      client:
+        url: http://127.0.0.1:8081
+  security: 
+    user: 
+      name: admin
+      password: 123456
+  swagger:
+    enabled: true
+    title: alienのAPI
+    description: test API
+    version: 1.0
+    contact:
+      name: yaolin
+      url: http://www.baidu.com
+      email: yl5410521@outlook.com
+    security:
+      filter-plugin: false
+      username: admin
+      password: admin
+
+
+ignored:
+  urls:
+    - /alien/oauth2/**
+    - /alien/actuator/**
+    - /alien/admin/**
+    - /alien/dictData/getByType/**
+    - /alien/user/regist
+    - /alien/common/**
+    - /druid/**
+    - /swagger-ui.html
+    - /swagger-resources/**
+    - /swagger/**
+    - /doc.html
+    - /**/v2/api-docs
+    - /**/*.js
+    - /**/*.css
+    - /**/*.png
+    - /**/*.ico
+    - /alien/test/**
+alien:
+  # 全局限流
+  ratelimit:
+    enable: true
+    # 每1秒内
+    timeout: 1000
+    # 总限制200个请求
+    limit: 200
+  # IP限流
+  iplimit:
+    enable: true
+    # 每1秒内
+    timeout: 1000
+    # 每个ip限制20个请求
+    limit: 20
+  # token交互方式
+  token:
+    # 设置为true后，token将存入redis，并具有单点登录功能 默认false使用JWT交互
+    redis: true
+    # 是否开启单设备登陆 仅当token交互方式为redis时生效
+    sdl: true
+    # token中存储用户权限数据 设为true开启后可避免每次请求再获取用户权限，但有可能导致编辑权限菜单后无法读取到最新权限数据（需用户重新登录）
+    storePerms: true
+    # token过期时间（分钟）
+    tokenExpireTime: 60
+    # 用户选择保存登录状态对应token过期时间（天）
+    saveLoginTime: 7
+    # 限制用户登陆错误次数（次）
+    loginTimeLimit: 10
+    # 错误超过次数后多少分钟后才能继续登录（分钟）
+    loginAfterTime: 10
+  # 日志记录方式 true使用Elasticsearch记录 false记录至数据库中
+  logRecord:
+    es: false
+  qqlbs:
+    key: 你的腾讯位置服务key
+
+# 需要验证码校验的接口路径 支持通配符 自动过滤拦截校验 无需开发人员再次校验
+captcha:
+  # 图片验证码验证
+  image:
+    - /login # 登录接口
+    - /oauth2/authorize # 认证接口
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:5060/eureka/eureka
+    egister-with-eureka: true
+    fetch-registry: true
+    instance:
+      hostname: localhost
+      prefer-ip-address: true
+      ip-address: 127.0.0.1
+       # 租约续订间隔时间（默认30秒），如下所示每间隔 5s 向服务端发送一次心跳，证明自己依然"存活"
+      lease-renewal-interval-in-seconds: 5
+       # 租约到期时间（默认90秒），如下所示，告诉服务端如果我 10s 之内没有给你发心跳，就代表我"死"了，将我踢出掉
+      lease-expiration-duration-in-seconds: 10
+feign:
+  #compression:
+    #request:
+      #enabled: true
+      #mime-types: text/xml,appliaction/xml,appliaction/json #配置压缩支持的mime type
+     # min-request-size: 2048 #配置压缩数据大小下限
+    #respone:
+      #enabled: true #配置响应GZIP压缩
+  hystrix: 
+    enabled: true
+info:
+  app.name: admin-server
+  company.name: A_One
+  build.artifactId: com.alien.admin
+  build.version: 1.0
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+# Actuator
+management:
+  health:
+    # 暂未用到ES 关闭其健康检查
+    elasticsearch:
+      enabled: false
+  endpoint:
+    health:
+      show-details: always
+      status:
+        http-mapping:
+          DOWN: 200
+          OUT_OF_SERVICE: 200
+          FATAL: 200
+          UNKNOWN: 200
+  endpoints:
+    web:
+      #base-path: /alien/actuator/
+      exposure:
+        include: '*'
+# Swagger界面内容配置
+swagger:
+  title: Alien の API接口文档
+  description: Alien Api Documentation
+  version: 1.0.0
+  termsOfServiceUrl: http://
+  contact:
+    name: yaolin
+    url: http://
+    email: yl5410521@outlook.com

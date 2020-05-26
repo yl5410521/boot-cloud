@@ -1,0 +1,7 @@
+server:
+  servlet:
+    context-path: /adminUI
+  port: 8081
+spring:
+  application:
+    name: adminUI-server

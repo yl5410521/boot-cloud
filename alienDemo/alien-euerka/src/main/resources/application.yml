@@ -1,0 +1,19 @@
+server:
+  port: 5060
+  servlet:
+    context-path: /eureka
+spring:
+  application:
+    name: eureka-server
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+    service-url:
+      defaultZone:  http://${eureka.instance.hostname}:${server.port}/eureka/eureka
+  instance:
+    hostname: localhost
+  server:
+    enableSelfPreservation: false  #开发时不统计上线率
+    eviction-interval-timer-in-ms: 10000
+    renewalPercentThreshold: 1

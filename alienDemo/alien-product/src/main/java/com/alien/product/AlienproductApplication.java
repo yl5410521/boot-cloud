@@ -1,0 +1,18 @@
+package com.alien.product;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@EnableEurekaClient
+@SpringBootApplication
+//表示开启Fegin客户端
+@EnableFeignClients
+public class AlienproductApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AlienproductApplication.class, args);
+	}
+
+}

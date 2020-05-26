@@ -1,0 +1,36 @@
+server:
+  servlet:
+    context-path: /customer
+  port: 8001
+spring:
+  application:
+    name: customer-client
+eureka:
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+  client:
+    service-url:
+      defaultZone: http://localhost:5060/eureka/eureka
+    registerWithEureka: true
+    fetchRegistry: true
+feign:
+  compression:
+     request:
+        enabled: true
+        mime-types: text/xml,appliaction/xml,appliaction/json #配置压缩支持的mime type
+        min-request-size: 2048 #配置压缩数据大小下限
+     respone: 
+        enabled: true #配置响应GZIP压缩
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+ribbon:
+  eureka:
+      enabled: true

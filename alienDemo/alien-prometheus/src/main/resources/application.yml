@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: alien-prometheus
+management:
+  security:
+    # 仅限于 开发环境可对security进行关闭。
+    enabled: false
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 1m
+        descriptions: true
+    tags:
+      application: ${spring.application.name}
+  web:
+    server:
+      auto-time-requests: true
+  endpoints:
+    prometheus:
+      id: springmetrics
+    web:
+      exposure:
+        include: health,info,env,prometheus,metrics,httptrace,threaddump,heapdump,springmetrics

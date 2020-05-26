@@ -1,0 +1,17 @@
+server:
+  port: 7002
+  servlet:
+    context-path: /product
+spring:
+  application:
+    name: product-server
+  main:
+    //allow-bean-definition-overriding: true
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    #register-with-eureka: false
+    #feth-register: false
+    serviceUrl:
+      defaultZone: http://localhost:5060/eureka/eureka

@@ -1,0 +1,77 @@
+server:
+  port: 9000
+  servlet:
+    context-path:
+  tomcat:
+    uri-encoding: UTF-8
+
+# 服务注册
+eureka:
+  # 实例设置
+  instance:
+    # 实例主机名称
+    hostname: 127.0.0.1
+    # 实例是否允许使用IP
+    preferIpAddress: false
+    # 实例状态监控参数
+    statusPageUrlPath: ${server.servlet.context-path}
+    healthCheckUrlPath: ${server.servlet.context-path}/actuator/health
+  # 客户端设置
+  client:
+    # 注册中心地址（集群时指定另外一个注册中心地址）
+    serviceUrl.defaultZone: http://127.0.0.1:5060/eureka/eureka
+
+spring:
+  cloud:
+    # Consul 服务发现
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        healthCheckPath: ${server.servlet.context-path}/actuator/health
+        healthCheckInterval: 15s
+
+    # 网关路由配置
+    gateway:
+      routes:
+        # 测试模块1
+        - id: provider
+          uri: lb://provider-server
+          predicates:
+            - Path=/api/provider/**
+          filters:
+            - StripPrefix=1
+           # - Authorize=true #启用过滤器 Authorize为过滤类的前缀
+        # 测试模块2
+        - id: customer
+          uri: lb://customer-client
+          predicates:
+            - Path=/api/customer/**
+          filters:
+            - StripPrefix=1
+           # - Authorize=true #启用过滤器 Authorize为过滤类的前缀
+
+  # 应用程序名称
+  application:
+    name: gateway-service
+
+  # 当前环境名称
+  profiles:
+    active: default
+
+  # 打印横幅
+  main:
+    bannerMode: "off"
+
+# 日志配置
+#logging:
+  #root: /usr/local/logs/${spring.application.name}
+  #config: classpath:logback-spring.xml
+provider-server:
+  ribbon:
+    listOfServers: localhost:1001,localhost:1002,localhost:1003
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+customer-client:
+  ribbon:
+    listOfServers: localhost:2001,localhost:2002,localhost:2003
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
